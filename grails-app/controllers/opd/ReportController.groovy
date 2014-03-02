@@ -8,28 +8,30 @@ import jxl.write.WritableCellFormat
 import jxl.write.WritableFont
 import jxl.write.WritableSheet
 import jxl.write.WritableWorkbook
-
+import groovy.time.TimeCategory
 
 class ReportController {
 	
 	
-    def report = {
-		
-        def file = createReport(Census.all)
-		
+    def monthly = {
+		use (TimeCategory) {
+			
+			def file = createReport(Census.findAllByDateConsultedBetween(1.month.ago, new Date()))
 
-        response.setHeader('Content-disposition', 'attachment;filename=Report.xls')
-        response.setHeader('Content-length', "${file.size()}")
-
-        OutputStream out = new BufferedOutputStream(response.outputStream)
-
-        try {
-            out.write(file.bytes)
-
-        } finally {
-            out.close()
-            return false
-        }
+			response.setHeader('Content-disposition', 'attachment;filename=MonthlyReport.xls')
+			response.setHeader('Content-length', "${file.size()}")
+	
+			OutputStream out = new BufferedOutputStream(response.outputStream)
+	
+			try {
+				out.write(file.bytes)
+	
+			} finally {
+				out.close()
+				return false
+			}
+		}
+       
     }
 
     private File createReport(def list) {
@@ -90,4 +92,22 @@ class ReportController {
 		return file
 
     }
+	def all = {
+		use (TimeCategory) {
+			def file = createReport(Census.list())
+
+			response.setHeader('Content-disposition', 'attachment;filename=AllReport.xls')
+			response.setHeader('Content-length', "${file.size()}")
+	
+			OutputStream out = new BufferedOutputStream(response.outputStream)
+	
+			try {
+				out.write(file.bytes)
+	
+			} finally {
+				out.close()
+				return false
+			}
+		}
+	}
 }
