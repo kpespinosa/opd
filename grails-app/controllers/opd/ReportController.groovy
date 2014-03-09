@@ -12,6 +12,22 @@ import groovy.time.TimeCategory
 
 class ReportController {
 	
+	def range = {
+		def file = createReport(Census.list())
+		
+		response.setHeader('Content-disposition', 'attachment;filename=AllReport.xls')
+		response.setHeader('Content-length', "${file.size()}")
+			
+		OutputStream out = new BufferedOutputStream(response.outputStream)
+			
+		try {
+			out.write(file.bytes)
+			
+			} finally {
+				out.close()
+				return false
+			}
+	}
 	
     def monthly = {
 		use (TimeCategory) {
