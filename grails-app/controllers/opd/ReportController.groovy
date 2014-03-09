@@ -12,8 +12,9 @@ import groovy.time.TimeCategory
 
 class ReportController {
 	
+	
 	def range = {
-		def file = createReport(Census.list())
+		def file = createReport(Census.findAllByDateConsultedBetween(params.fromDate, params.toDate))
 		
 		response.setHeader('Content-disposition', 'attachment;filename=AllReport.xls')
 		response.setHeader('Content-length', "${file.size()}")
@@ -25,30 +26,12 @@ class ReportController {
 			
 			} finally {
 				out.close()
+				
 				return false
+				
 			}
 	}
 	
-    def monthly = {
-		use (TimeCategory) {
-			
-			def file = createReport(Census.findAllByDateConsultedBetween(1.month.ago, new Date()))
-
-			response.setHeader('Content-disposition', 'attachment;filename=MonthlyReport.xls')
-			response.setHeader('Content-length', "${file.size()}")
-	
-			OutputStream out = new BufferedOutputStream(response.outputStream)
-	
-			try {
-				out.write(file.bytes)
-	
-			} finally {
-				out.close()
-				return false
-			}
-		}
-       
-    }
 
     private File createReport(def list) {
 		
@@ -108,22 +91,5 @@ class ReportController {
 		return file
 
     }
-	def all = {
-		use (TimeCategory) {
-			def file = createReport(Census.list())
-
-			response.setHeader('Content-disposition', 'attachment;filename=AllReport.xls')
-			response.setHeader('Content-length', "${file.size()}")
 	
-			OutputStream out = new BufferedOutputStream(response.outputStream)
-	
-			try {
-				out.write(file.bytes)
-	
-			} finally {
-				out.close()
-				return false
-			}
-		}
-	}
 }

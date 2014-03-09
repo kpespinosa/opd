@@ -26,11 +26,13 @@ class CensusController {
     }
 	
 	
-
+	def download(){
+		
+	}
     def create() {
         respond new Census(params)
     }
-
+	
     @Transactional
     def save(Census censusInstance) {
         if (censusInstance == null) {
